@@ -1,0 +1,41 @@
+# Node.js
+node_modules/
+.next/
+out/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Python
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+*.sqlite3
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.*
+
+# Docker
+*.pid
+*.log
+*.sock
+.env.docker
+.env.local
+
+# VSCode
+.vscode/
+
+# Compiled
+dist/
+build/
+
+# Misc
+*.db
+*.log
+coverage/
