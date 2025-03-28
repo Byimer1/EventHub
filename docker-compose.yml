@@ -1,5 +1,14 @@
-version: '3.8'
+version: "3.9"
+
 services:
+  frontend:
+    build: ./frontend-vite
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend-vite:/app
+    restart: unless-stopped
+
   backend:
     build: ./backend
     ports:
@@ -8,20 +17,20 @@ services:
       - ./backend:/app
     depends_on:
       - db
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db/event_db
+
   db:
-    image: postgres
+    image: postgres:15
     restart: always
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: event_db
     volumes:
       - pgdata:/var/lib/postgresql/data
-  frontend:
-    build: ./frontend
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./frontend:/app
+
 volumes:
   pgdata:
