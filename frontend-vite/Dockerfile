@@ -1,20 +1,24 @@
-# Base image
-FROM node:18-alpine
+# Use an official lightweight Node image
+FROM node:20-alpine
 
 # Set working directory
 WORKDIR /app
 
-# Install dependencies
-COPY package*.json ./
+# Copy package files and install dependencies
+COPY package.json package-lock.json ./
 RUN npm install
 
-# Copy source code
+# Copy all frontend source code
 COPY . .
 
-# Build the app for production
+# Build the frontend
 RUN npm run build
 
-# Serve it with a minimal HTTP server
+# Install a static file server
 RUN npm install -g serve
+
+# Expose port 3000
 EXPOSE 3000
-CMD ["serve", "-s", "dist", "-l", "3000"]
+
+# Start the frontend using serve
+CMD ["serve", "-s", "dist"]

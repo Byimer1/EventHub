@@ -1,28 +1,66 @@
+// src/pages/Signup.tsx
 import { useState } from "react";
-import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
-  const handleSignup = async () => {
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+
     try {
-      await axios.post("http://localhost:8000/auth/signup", {
-        email,
-        password,
+      const res = await fetch("http://localhost:8000/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
       });
-      alert("Signup successful");
-    } catch (err) {
-      alert("Signup failed");
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.detail || "Signup failed");
+        return;
+      }
+
+      navigate("/"); // redirect to login
+    } catch {
+      setError("An error occurred");
     }
   };
 
   return (
-    <div className="p-4 max-w-sm mx-auto">
-      <h2 className="text-xl font-bold mb-4">Signup</h2>
-      <input className="border w-full mb-2 p-2" placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
-      <input className="border w-full mb-4 p-2" type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} />
-      <button className="bg-green-500 text-white w-full p-2" onClick={handleSignup}>Signup</button>
+    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <form onSubmit={handleSignup} className="bg-white p-8 rounded shadow-md w-80">
+        <h2 className="text-2xl font-bold mb-6 text-center">Sign Up</h2>
+
+        <input
+          type="email"
+          placeholder="Email"
+          className="w-full mb-4 p-2 border rounded"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+
+        <input
+          type="password"
+          placeholder="Password"
+          className="w-full mb-4 p-2 border rounded"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+
+        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+
+        <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">
+          Sign Up
+        </button>
+      </form>
     </div>
   );
 }

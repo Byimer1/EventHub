@@ -50,3 +50,22 @@ def delete_event(event_id: int, db: Session = Depends(get_db), user: User = Depe
     db.delete(event)
     db.commit()
     return {"message": "Event deleted"}
+
+@router.put("/{event_id}", response_model=EventOut)
+def update_event(
+    event_id: int,
+    data: EventCreate,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
+):
+    event = db.query(Event).filter(Event.id == event_id, Event.organizer_email == user.email).first()
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found or not yours")
+
+    for key, value in data.dict().items():
+        setattr(event, key, value)
+
+    db.commit()
+    db.refresh(event)
+    return event
+
