@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Header
 from sqlalchemy.orm import Session
 from db import SessionLocal
 from models.event import Event
@@ -15,13 +15,23 @@ def get_db():
     finally:
         db.close()
 
-def get_current_user(token: str, db: Session = Depends(get_db)):
+# def get_current_user(token: str, db: Session = Depends(get_db)):
+#     payload = decode_access_token(token)
+#     email = payload.get("sub")
+#     user = db.query(User).filter(User.email == email).first()
+#     if not user:
+#         raise HTTPException(status_code=404, detail="User not found")
+#     return user
+
+def get_current_user(authorization: str = Header(...), db: Session = Depends(get_db)):
+    token = authorization.replace("Bearer ", "")
     payload = decode_access_token(token)
     email = payload.get("sub")
     user = db.query(User).filter(User.email == email).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
+
 
 @router.post("/", response_model=EventOut)
 def create_event(data: EventCreate, db: Session = Depends(get_db), user: User = Depends(get_current_user)):

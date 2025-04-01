@@ -21,14 +21,15 @@ export default function AddEvent() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: token ? token : "",
+          // Authorization: token ? token : "",
+          Authorization: token ? `Bearer ${token}` : "",
         },
         body: JSON.stringify({
           title,
           description,
           location,
-          start_time: startTime,
-          end_time: endTime,
+          start_time: new Date(startTime).toISOString(),
+          end_time: new Date(endTime).toISOString(),
         }),
       });
 
